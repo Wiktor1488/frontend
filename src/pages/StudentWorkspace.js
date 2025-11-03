@@ -224,10 +224,17 @@ function StudentWorkspace() {
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex">
+      {/* Main Content - używamy grid zamiast flex */}
+      <div
+        style={{
+          flex: 1,
+          display: "grid",
+          gridTemplateColumns: "384px 1fr 1fr",
+          overflow: "hidden",
+        }}
+      >
         {/* Sidebar z zadaniami/rankingiem/hintami */}
-        <div className="w-96 border-r bg-white flex flex-col">
+        <div className="border-r bg-white flex flex-col">
           {/* Tabs */}
           <div className="flex border-b">
             <button
@@ -316,7 +323,7 @@ function StudentWorkspace() {
         </div>
 
         {/* Editor Panel */}
-        <div className="flex-1 flex flex-col">
+        <div className="flex flex-col">
           <div className="bg-gray-800 text-white px-4 py-2 flex items-center justify-between">
             <div className="flex items-center">
               <Code className="w-4 h-4 mr-2" />
@@ -331,7 +338,7 @@ function StudentWorkspace() {
               </div>
             )}
           </div>
-          <div className="flex-1">
+          <div className="flex-1 overflow-hidden">
             <Editor
               height="100%"
               defaultLanguage="html"
@@ -350,12 +357,12 @@ function StudentWorkspace() {
         </div>
 
         {/* Preview Panel */}
-        <div className="flex-1 flex flex-col border-l">
+        <div className="flex flex-col border-l">
           <div className="bg-white px-4 py-2 flex items-center border-b">
             <Eye className="w-4 h-4 mr-2" />
             <span className="text-sm font-medium">Podgląd</span>
           </div>
-          <div className="flex-1 bg-white">
+          <div className="flex-1 bg-white overflow-hidden">
             <iframe
               title="preview"
               className="w-full h-full border-0"

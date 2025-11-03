@@ -146,110 +146,127 @@ function TaskPanel({
   }, {});
 
   return (
-    <div className="flex h-full">
-      {/* Lista zadań */}
-      <div className="w-80 bg-white border-r flex flex-col">
-        <div className="px-4 py-3 border-b flex items-center justify-between">
-          <div className="flex items-center">
-            <BookOpen className="w-5 h-5 mr-2 text-indigo-600" />
-            <span className="font-semibold">Zadania</span>
-          </div>
-          {!isTeacher && (
-            <div className="flex items-center text-sm text-gray-600">
-              <Award className="w-4 h-4 mr-1" />
-              <span>
-                {
-                  Object.values(progress).filter(
-                    (p) => p.status === "completed"
-                  ).length
-                }
-                /{tasks.length}
-              </span>
+    <div className="h-full flex flex-col bg-white">
+      {/* Jeśli nie ma wybranego zadania, pokaż listę */}
+      {!selectedTask ? (
+        <>
+          {/* Header listy zadań */}
+          <div className="px-4 py-3 border-b flex items-center justify-between">
+            <div className="flex items-center">
+              <BookOpen className="w-5 h-5 mr-2 text-indigo-600" />
+              <span className="font-semibold">Zadania</span>
             </div>
-          )}
-        </div>
+            {!isTeacher && (
+              <div className="flex items-center text-sm text-gray-600">
+                <Award className="w-4 h-4 mr-1" />
+                <span>
+                  {
+                    Object.values(progress).filter(
+                      (p) => p.status === "completed"
+                    ).length
+                  }
+                  /{tasks.length}
+                </span>
+              </div>
+            )}
+          </div>
 
-        <div className="flex-1 overflow-y-auto p-2">
-          {["easy", "medium", "hard"].map(
-            (difficulty) =>
-              groupedTasks[difficulty] && (
-                <div key={difficulty} className="mb-4">
-                  <div className="flex items-center px-2 py-1 mb-2">
-                    {getDifficultyIcon(difficulty)}
-                    <span className="ml-2 text-xs font-semibold text-gray-600 uppercase">
-                      {difficulty === "easy"
-                        ? "Łatwe"
-                        : difficulty === "medium"
-                        ? "Średnie"
-                        : "Trudne"}
-                    </span>
-                  </div>
+          {/* Lista zadań */}
+          <div className="flex-1 overflow-y-auto p-2">
+            {["easy", "medium", "hard"].map(
+              (difficulty) =>
+                groupedTasks[difficulty] && (
+                  <div key={difficulty} className="mb-4">
+                    <div className="flex items-center px-2 py-1 mb-2">
+                      {getDifficultyIcon(difficulty)}
+                      <span className="ml-2 text-xs font-semibold text-gray-600 uppercase">
+                        {difficulty === "easy"
+                          ? "Łatwe"
+                          : difficulty === "medium"
+                          ? "Średnie"
+                          : "Trudne"}
+                      </span>
+                    </div>
 
-                  {groupedTasks[difficulty].map((task) => {
-                    const status = getTaskStatus(task.id);
-                    const isCompleted = status === "completed";
+                    {groupedTasks[difficulty].map((task) => {
+                      const status = getTaskStatus(task.id);
+                      const isCompleted = status === "completed";
 
-                    return (
-                      <button
-                        key={task.id}
-                        onClick={() => handleTaskSelect(task)}
-                        className={`w-full text-left p-3 mb-2 rounded-lg border transition-all ${
-                          selectedTask?.id === task.id
-                            ? "bg-indigo-50 border-indigo-300"
-                            : "hover:bg-gray-50 border-gray-200"
-                        }`}
-                      >
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center">
-                              {!isTeacher && (
-                                <>
-                                  {isCompleted ? (
-                                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                                  ) : status === "in_progress" ? (
-                                    <Clock className="w-4 h-4 text-yellow-500 mr-2" />
-                                  ) : (
-                                    <Target className="w-4 h-4 text-gray-400 mr-2" />
-                                  )}
-                                </>
-                              )}
-                              <span className="font-medium text-sm">
-                                {task.title}
-                              </span>
-                            </div>
-                            <div className="flex items-center mt-1 space-x-2">
-                              <span
-                                className={`text-xs px-2 py-0.5 rounded ${getDifficultyColor(
-                                  task.difficulty
-                                )}`}
-                              >
-                                {task.points} pkt
-                              </span>
-                              {progress[task.id]?.attempts > 0 && (
-                                <span className="text-xs text-gray-500">
-                                  Próby: {progress[task.id].attempts}
+                      return (
+                        <button
+                          key={task.id}
+                          onClick={() => handleTaskSelect(task)}
+                          className={`w-full text-left p-3 mb-2 rounded-lg border transition-all hover:bg-gray-50 border-gray-200`}
+                        >
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center">
+                                {!isTeacher && (
+                                  <>
+                                    {isCompleted ? (
+                                      <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                                    ) : status === "in_progress" ? (
+                                      <Clock className="w-4 h-4 text-yellow-500 mr-2" />
+                                    ) : (
+                                      <Target className="w-4 h-4 text-gray-400 mr-2" />
+                                    )}
+                                  </>
+                                )}
+                                <span className="font-medium text-sm">
+                                  {task.title}
                                 </span>
-                              )}
+                              </div>
+                              <div className="flex items-center mt-1 space-x-2">
+                                <span
+                                  className={`text-xs px-2 py-0.5 rounded ${getDifficultyColor(
+                                    task.difficulty
+                                  )}`}
+                                >
+                                  {task.points} pkt
+                                </span>
+                                {progress[task.id]?.attempts > 0 && (
+                                  <span className="text-xs text-gray-500">
+                                    Próby: {progress[task.id].attempts}
+                                  </span>
+                                )}
+                              </div>
                             </div>
+                            <ChevronRight className="w-4 h-4 text-gray-400 mt-1" />
                           </div>
-                          <ChevronRight className="w-4 h-4 text-gray-400 mt-1" />
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              )
-          )}
-        </div>
-      </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )
+            )}
 
-      {/* Szczegóły zadania */}
-      <div className="flex-1 flex flex-col bg-gray-50">
-        {selectedTask ? (
-          <>
-            <div className="bg-white border-b px-6 py-4">
-              <div className="flex items-start justify-between">
-                <div>
+            {tasks.length === 0 && (
+              <div className="text-center mt-8">
+                <BookOpen className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-600">
+                  Brak dostępnych zadań
+                </h3>
+              </div>
+            )}
+          </div>
+        </>
+      ) : (
+        /* Szczegóły zadania - zajmują całą przestrzeń */
+        <>
+          <div className="bg-white border-b px-4 py-3">
+            <button
+              onClick={() => setSelectedTask(null)}
+              className="text-sm text-gray-500 hover:text-gray-700 flex items-center"
+            >
+              <ChevronRight className="w-4 h-4 mr-1 rotate-180" />
+              Powrót do listy zadań
+            </button>
+          </div>
+
+          <div className="flex-1 overflow-y-auto">
+            <div className="px-4 py-4">
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex-1">
                   <h2 className="text-xl font-semibold">
                     {selectedTask.title}
                   </h2>
@@ -257,7 +274,7 @@ function TaskPanel({
                     {selectedTask.description}
                   </p>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex flex-col items-end space-y-2 ml-4">
                   <span
                     className={`px-3 py-1 rounded-full text-sm ${getDifficultyColor(
                       selectedTask.difficulty
@@ -274,129 +291,115 @@ function TaskPanel({
                   </span>
                 </div>
               </div>
-            </div>
 
-            {/* Przyciski akcji */}
-            {!isTeacher && (
-              <div className="bg-white border-b px-6 py-3">
-                <div className="flex items-center space-x-3">
-                  <button
-                    onClick={handleValidate}
-                    disabled={loading}
-                    className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 flex items-center"
-                  >
-                    {loading ? (
-                      "Sprawdzanie..."
-                    ) : (
-                      <>
-                        <CheckCircle className="w-4 h-4 mr-2" />
-                        Sprawdź rozwiązanie
-                      </>
-                    )}
-                  </button>
+              {/* Przyciski akcji */}
+              {!isTeacher && (
+                <div className="mb-4">
+                  <div className="flex items-center space-x-3">
+                    <button
+                      onClick={handleValidate}
+                      disabled={loading}
+                      className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 flex items-center"
+                    >
+                      {loading ? (
+                        "Sprawdzanie..."
+                      ) : (
+                        <>
+                          <CheckCircle className="w-4 h-4 mr-2" />
+                          Sprawdź rozwiązanie
+                        </>
+                      )}
+                    </button>
 
-                  <button
-                    onClick={() => setShowHints(!showHints)}
-                    className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 flex items-center"
-                  >
-                    <AlertCircle className="w-4 h-4 mr-2" />
-                    {showHints ? "Ukryj" : "Pokaż"} podpowiedzi
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Wyniki walidacji */}
-            {validationResult && (
-              <div className="bg-white mx-6 mt-4 rounded-lg border">
-                <div
-                  className={`px-4 py-3 border-b ${
-                    validationResult.passed ? "bg-green-50" : "bg-red-50"
-                  }`}
-                >
-                  <div className="flex items-center">
-                    {validationResult.passed ? (
-                      <>
-                        <CheckCircle className="w-5 h-5 text-green-600 mr-2" />
-                        <span className="font-semibold text-green-800">
-                          Zadanie zaliczone! 🎉
-                        </span>
-                      </>
-                    ) : (
-                      <>
-                        <XCircle className="w-5 h-5 text-red-600 mr-2" />
-                        <span className="font-semibold text-red-800">
-                          Zadanie niezaliczone
-                        </span>
-                      </>
-                    )}
-                    <span className="ml-auto text-sm">
-                      Wynik: {validationResult.score}%
-                    </span>
+                    <button
+                      onClick={() => setShowHints(!showHints)}
+                      className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 flex items-center"
+                    >
+                      <AlertCircle className="w-4 h-4 mr-2" />
+                      {showHints ? "Ukryj" : "Pokaż"} podpowiedzi
+                    </button>
                   </div>
                 </div>
+              )}
 
-                <div className="p-4 space-y-2">
-                  {validationResult.results.map((result, index) => (
-                    <div
-                      key={index}
-                      className={`flex items-start p-2 rounded ${
-                        result.passed ? "bg-green-50" : "bg-red-50"
-                      }`}
-                    >
-                      {result.passed ? (
-                        <CheckCircle className="w-4 h-4 text-green-600 mr-2 mt-0.5" />
+              {/* Wyniki walidacji */}
+              {validationResult && (
+                <div className="bg-white rounded-lg border mb-4">
+                  <div
+                    className={`px-4 py-3 border-b ${
+                      validationResult.passed ? "bg-green-50" : "bg-red-50"
+                    }`}
+                  >
+                    <div className="flex items-center">
+                      {validationResult.passed ? (
+                        <>
+                          <CheckCircle className="w-5 h-5 text-green-600 mr-2" />
+                          <span className="font-semibold text-green-800">
+                            Zadanie zaliczone! 🎉
+                          </span>
+                        </>
                       ) : (
-                        <XCircle className="w-4 h-4 text-red-600 mr-2 mt-0.5" />
+                        <>
+                          <XCircle className="w-5 h-5 text-red-600 mr-2" />
+                          <span className="font-semibold text-red-800">
+                            Zadanie niezaliczone
+                          </span>
+                        </>
                       )}
-                      <span
-                        className={`text-sm ${
-                          result.passed ? "text-green-800" : "text-red-800"
-                        }`}
-                      >
-                        {result.message}
+                      <span className="ml-auto text-sm">
+                        Wynik: {validationResult.score}%
                       </span>
                     </div>
-                  ))}
-                </div>
-              </div>
-            )}
+                  </div>
 
-            {/* Podpowiedzi */}
-            {showHints && selectedTask.hints && (
-              <div className="bg-yellow-50 mx-6 mt-4 rounded-lg border border-yellow-200 p-4">
-                <div className="flex items-center mb-3">
-                  <AlertCircle className="w-5 h-5 text-yellow-600 mr-2" />
-                  <span className="font-semibold text-yellow-800">
-                    Podpowiedzi
-                  </span>
+                  <div className="p-4 space-y-2">
+                    {validationResult.results.map((result, index) => (
+                      <div
+                        key={index}
+                        className={`flex items-start p-2 rounded ${
+                          result.passed ? "bg-green-50" : "bg-red-50"
+                        }`}
+                      >
+                        {result.passed ? (
+                          <CheckCircle className="w-4 h-4 text-green-600 mr-2 mt-0.5" />
+                        ) : (
+                          <XCircle className="w-4 h-4 text-red-600 mr-2 mt-0.5" />
+                        )}
+                        <span
+                          className={`text-sm ${
+                            result.passed ? "text-green-800" : "text-red-800"
+                          }`}
+                        >
+                          {result.message}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <ol className="list-decimal list-inside space-y-2">
-                  {selectedTask.hints.map((hint, index) => (
-                    <li key={index} className="text-sm text-yellow-800">
-                      {hint}
-                    </li>
-                  ))}
-                </ol>
-              </div>
-            )}
-          </>
-        ) : (
-          <div className="flex-1 flex items-center justify-center">
-            <div className="text-center">
-              <BookOpen className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-600">
-                Wybierz zadanie z listy
-              </h3>
-              <p className="text-gray-500 mt-1">
-                {isTeacher
-                  ? "Wybierz zadanie do przypisania uczniom"
-                  : "Rozwiązuj zadania i zdobywaj punkty"}
-              </p>
+              )}
+
+              {/* Podpowiedzi */}
+              {showHints && selectedTask.hints && (
+                <div className="bg-yellow-50 rounded-lg border border-yellow-200 p-4">
+                  <div className="flex items-center mb-3">
+                    <AlertCircle className="w-5 h-5 text-yellow-600 mr-2" />
+                    <span className="font-semibold text-yellow-800">
+                      Podpowiedzi
+                    </span>
+                  </div>
+                  <ol className="list-decimal list-inside space-y-2">
+                    {selectedTask.hints.map((hint, index) => (
+                      <li key={index} className="text-sm text-yellow-800">
+                        {hint}
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              )}
             </div>
           </div>
-        )}
-      </div>
+        </>
+      )}
     </div>
   );
 }
