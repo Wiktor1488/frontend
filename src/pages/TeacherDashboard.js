@@ -288,9 +288,17 @@ function TeacherDashboard() {
         </div>
       </div>
 
-      <div className="flex-1 flex">
-        {/* Sidebar */}
-        <div className="w-80 bg-white border-r flex flex-col">
+      {/* Main Content with Grid Layout */}
+      <div
+        style={{
+          flex: 1,
+          display: "grid",
+          gridTemplateColumns: "320px 1fr 320px", // Sidebar (320px/w-80) | Middle (auto) | Template (320px/w-80)
+          overflow: "hidden",
+        }}
+      >
+        {/* Left Sidebar */}
+        <div className="border-r bg-white flex flex-col h-full overflow-hidden">
           {/* View Tabs */}
           <div className="flex border-b">
             <button
@@ -331,7 +339,7 @@ function TeacherDashboard() {
           {/* Content based on active view */}
           <div className="flex-1 overflow-hidden">
             {activeView === "students" && (
-              <div className="flex-1 overflow-y-auto">
+              <div className="flex-1 overflow-y-auto h-full">
                 {students.length === 0 ? (
                   <div className="p-4 text-center text-gray-500">
                     <AlertCircle className="w-8 h-8 mx-auto mb-2 text-gray-400" />
@@ -371,10 +379,12 @@ function TeacherDashboard() {
             )}
 
             {activeView === "tasks" && (
-              <div className="h-full">
-                <TaskPanel isTeacher={true} onTaskSelect={handleAssignTask} />
+              <div className="h-full flex flex-col">
+                <div className="flex-1 overflow-hidden">
+                  <TaskPanel isTeacher={true} onTaskSelect={handleAssignTask} />
+                </div>
                 {selectedTask && (
-                  <div className="border-t p-3 bg-green-50">
+                  <div className="border-t p-3 bg-green-50 shrink-0">
                     <p className="text-sm text-green-800">
                       <Target className="inline w-4 h-4 mr-1" />
                       Aktywne: <strong>{selectedTask.title}</strong>
@@ -390,8 +400,8 @@ function TeacherDashboard() {
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col">
+        {/* Middle Content (Code & Preview) */}
+        <div className="flex flex-col h-full overflow-hidden">
           {!selectedStudent ? (
             <div className="flex-1 flex items-center justify-center">
               <div className="text-center">
@@ -406,10 +416,11 @@ function TeacherDashboard() {
             </div>
           ) : (
             <>
-              {/* Student Code Viewer */}
-              <div className="flex-1 flex">
+              {/* Student Code Viewer & Preview Split */}
+              <div className="flex-1 flex overflow-hidden">
+                {/* Code Editor */}
                 <div className="flex-1 flex flex-col">
-                  <div className="bg-gray-800 text-white px-4 py-2 flex items-center justify-between">
+                  <div className="bg-gray-800 text-white px-4 py-2 flex items-center justify-between shrink-0">
                     <div className="flex items-center">
                       <Code className="w-4 h-4 mr-2" />
                       <span className="text-sm">
@@ -423,7 +434,7 @@ function TeacherDashboard() {
                       </span>
                     </div>
                   </div>
-                  <div className="flex-1">
+                  <div className="flex-1 overflow-hidden">
                     <Editor
                       height="100%"
                       defaultLanguage="html"
@@ -442,11 +453,11 @@ function TeacherDashboard() {
 
                 {/* Preview */}
                 <div className="flex-1 flex flex-col border-l">
-                  <div className="bg-white px-4 py-2 flex items-center border-b">
+                  <div className="bg-white px-4 py-2 flex items-center border-b shrink-0">
                     <Eye className="w-4 h-4 mr-2" />
                     <span className="text-sm font-medium">Podgląd</span>
                   </div>
-                  <div className="flex-1 bg-white">
+                  <div className="flex-1 bg-white overflow-hidden">
                     <iframe
                       title="preview"
                       className="w-full h-full border-0"
@@ -458,7 +469,7 @@ function TeacherDashboard() {
               </div>
 
               {/* Hint Input */}
-              <div className="bg-white border-t p-4">
+              <div className="bg-white border-t p-4 shrink-0">
                 <div className="flex items-center space-x-2">
                   <MessageSquare className="w-5 h-5 text-gray-500" />
                   <input
@@ -482,13 +493,13 @@ function TeacherDashboard() {
           )}
         </div>
 
-        {/* Template Editor */}
-        <div className="w-80 border-l bg-white flex flex-col">
-          <div className="px-4 py-3 border-b flex items-center">
+        {/* Right Sidebar (Template Editor) */}
+        <div className="border-l bg-white flex flex-col h-full overflow-hidden">
+          <div className="px-4 py-3 border-b flex items-center shrink-0">
             <FileText className="w-4 h-4 mr-2" />
             <span className="font-medium">Szablon kodu</span>
           </div>
-          <div className="flex-1">
+          <div className="flex-1 overflow-hidden">
             <Editor
               height="100%"
               defaultLanguage="html"
@@ -503,7 +514,7 @@ function TeacherDashboard() {
               }}
             />
           </div>
-          <div className="p-3 border-t">
+          <div className="p-3 border-t shrink-0">
             <button
               onClick={handleUpdateTemplate}
               className="w-full px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"

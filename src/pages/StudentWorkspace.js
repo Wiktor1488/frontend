@@ -234,7 +234,8 @@ function StudentWorkspace() {
         }}
       >
         {/* Sidebar z zadaniami/rankingiem/hintami */}
-        <div className="border-r bg-white flex flex-col">
+        {/* DODANO: h-full i overflow-hidden aby naprawić przewijanie w Gridzie */}
+        <div className="border-r bg-white flex flex-col h-full overflow-hidden">
           {/* Tabs */}
           <div className="flex border-b">
             <button

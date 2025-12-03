@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   BookOpen,
   CheckCircle,
@@ -30,14 +30,8 @@ function TaskPanel({
   const [progress, setProgress] = useState({});
   const [showHints, setShowHints] = useState(false);
 
-  useEffect(() => {
-    loadTasks();
-    if (studentId && !isTeacher) {
-      loadProgress();
-    }
-  }, [studentId, isTeacher]);
-
-  const loadTasks = async () => {
+  // Funkcje owinięte w useCallback (Poprawka ESLint)
+  const loadTasks = useCallback(async () => {
     try {
       const response = await axios.get(`${API_URL}/tasks`);
       setTasks(response.data);
@@ -45,9 +39,9 @@ function TaskPanel({
       console.error("Błąd ładowania zadań:", error);
       toast.error("Błąd ładowania zadań");
     }
-  };
+  }, [setTasks]);
 
-  const loadProgress = async () => {
+  const loadProgress = useCallback(async () => {
     if (!studentId) return;
 
     try {
@@ -62,7 +56,15 @@ function TaskPanel({
     } catch (error) {
       console.error("Błąd ładowania postępów:", error);
     }
-  };
+  }, [studentId, setProgress]);
+
+  // useEffect z pełną tablicą zależności
+  useEffect(() => {
+    loadTasks();
+    if (studentId && !isTeacher) {
+      loadProgress();
+    }
+  }, [studentId, isTeacher, loadTasks, loadProgress]);
 
   const handleTaskSelect = (task) => {
     setSelectedTask(task);
@@ -74,7 +76,7 @@ function TaskPanel({
     }
   };
 
-  const handleValidate = async () => {
+  const handleValidate = useCallback(async () => {
     if (!selectedTask || !currentCode) return;
 
     setLoading(true);
@@ -105,7 +107,14 @@ function TaskPanel({
     } finally {
       setLoading(false);
     }
-  };
+  }, [
+    selectedTask,
+    currentCode,
+    studentId,
+    loadProgress,
+    setLoading,
+    setValidationResult,
+  ]);
 
   const getDifficultyColor = (difficulty) => {
     switch (difficulty) {
@@ -149,7 +158,8 @@ function TaskPanel({
     <div className="h-full flex flex-col bg-white">
       {/* Jeśli nie ma wybranego zadania, pokaż listę */}
       {!selectedTask ? (
-        <>
+        // Ustawia h-full, aby wypełnić wysokość rodzica (flex-1)
+        <div className="h-full flex flex-col">
           {/* Header listy zadań */}
           <div className="px-4 py-3 border-b flex items-center justify-between">
             <div className="flex items-center">
@@ -171,7 +181,7 @@ function TaskPanel({
             )}
           </div>
 
-          {/* Lista zadań */}
+          {/* Lista zadań - to jest element, który musi się przewijać */}
           <div className="flex-1 overflow-y-auto p-2">
             {["easy", "medium", "hard"].map(
               (difficulty) =>
@@ -249,10 +259,10 @@ function TaskPanel({
               </div>
             )}
           </div>
-        </>
+        </div>
       ) : (
         /* Szczegóły zadania - zajmują całą przestrzeń */
-        <>
+        <div className="h-full flex flex-col">
           <div className="bg-white border-b px-4 py-3">
             <button
               onClick={() => setSelectedTask(null)}
@@ -398,7 +408,7 @@ function TaskPanel({
               )}
             </div>
           </div>
-        </>
+        </div>
       )}
     </div>
   );
