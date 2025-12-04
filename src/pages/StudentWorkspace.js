@@ -367,7 +367,7 @@ function StudentWorkspace() {
             <iframe
               title="preview"
               className="w-full h-full border-0"
-              sandbox="allow-scripts"
+              sandbox=""
               srcdoc={code}
             />
           </div>
